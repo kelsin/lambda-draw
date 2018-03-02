@@ -45,7 +45,7 @@ const tileHex = curry((render, hw, vertical, color, hx, hy) => {
       strokeColor: c.track,
       strokeWidth: 2
     });
-    render.text(valuePoint[0] - 1, valuePoint[1] - 1, value.toString(), {
+    render.text(valuePoint[0], valuePoint[1], value.toString(), {
       fontWeight: "bold",
       fontSize: 18,
       fillColor: c.track

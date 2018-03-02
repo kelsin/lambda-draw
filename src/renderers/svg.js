@@ -34,7 +34,10 @@ const ATTRS = {
   fontFamily: "font-family",
   fontSize: "font-size",
   fontWeight: "font-weight",
-  textAnchor: "text-anchor"
+  textAnchor: "text-anchor",
+  alignmentBaseline: "alignment-baseline",
+  x: "x",
+  y: "y"
 };
 
 const convertAttrs = compose(merge(defaults), mapKeys(flip(prop)(ATTRS)));
@@ -68,14 +71,27 @@ const drawMove = invoker(2, "move");
 const drawCenter = invoker(2, "center");
 
 // (value, draw) => draw.text(value);
-const drawText = invoker(1, "text");
+const drawText = invoker(1, "plain");
 
 const clip = draw => () => draw.clip();
 
 const text = curry((draw, x, y, value, attrs = {}) => {
-  return compose(drawCenter(x,y),
-            drawAttr(convertAttrs(attrs)),
-            drawText(value))(draw);
+  return compose(
+    drawAttr(
+      convertAttrs(
+        merge(
+          {
+            x: x,
+            y: y,
+            alignmentBaseline: "middle",
+            textAnchor: "middle"
+          },
+          attrs
+        )
+      )
+    ),
+    drawText(value)
+  )(draw);
 });
 
 const circle = curry((draw, x, y, r, attrs = {}) => {
@@ -105,7 +121,9 @@ const path = curry((draw, path, attrs = {}) => {
 const create = () => {
   let draw = SVG(document.documentElement);
   let defs = draw.defs();
-  defs.element("style").words("@import url('https://fonts.googleapis.com/css?family=Limelight');");
+  defs
+    .element("style")
+    .words("@import url('https://fonts.googleapis.com/css?family=Limelight');");
   return assoc(
     "toString",
     () => draw.svg(),
